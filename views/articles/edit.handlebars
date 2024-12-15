@@ -1,0 +1,6 @@
+<h2>Editar Artículo</h2>
+<form method="POST" action="/articles/{{article._id}}?_method=PUT">
+    <input type="text" name="title" value="{{article.title}}" required />
+    <textarea name="content" required>{{article.content}}</textarea>
+    <button type="submit">Actualizar</button>
+</form>
