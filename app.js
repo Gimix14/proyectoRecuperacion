@@ -6,6 +6,7 @@ const methodOverride = require('method-override');
 const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
+const path = require('path');
 
 // Inicialización
 const app = express();
@@ -14,10 +15,31 @@ const app = express();
 app.engine('handlebars', exphbs.engine({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 
+// Configurar sesiones
+app.use(
+    session({
+        secret: 'secret', // Cambia esto por una cadena segura
+        resave: true,
+        saveUninitialized: true,
+    })
+);
+
+// Mensajes Flash
+app.use(flash());
+
+// Variables globales para mensajes
+app.use((req, res, next) => {
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+    next();
+});
+
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(methodOverride('_method'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Sesión
 app.use(
@@ -53,6 +75,10 @@ mongoose
 
 // Rutas
 app.use('/articles', require('./routes/articles'));
+
+app.get('/about', (req, res) => {
+    res.render('about', { title: 'Acerca de' });
+});
 
 // Ruta principal
 app.get('/', (req, res) => {

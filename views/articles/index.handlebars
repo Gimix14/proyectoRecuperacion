@@ -1,12 +1,31 @@
-<h2>Artículos</h2>
-<a href="/articles/add">Agregar Artículo</a>
-{{#each articles}}
-<div>
-    <h3>{{this.title}}</h3>
-    <p>{{this.content}}</p>
-    <a href="/articles/edit/{{this._id}}">Editar</a>
-    <form method="POST" action="/articles/{{this._id}}?_method=DELETE">
-        <button type="submit">Eliminar</button>
-    </form>
+<div class="container mt-5">
+    <h2 class="text-secondary text-center">Lista de Artículos</h2>
+    <div class="text-end mb-3">
+        <a href="/articles/add" class="btn btn-primary">Agregar Artículo</a>
+    </div>
+
+    {{#if articles.length}}
+    <div class="row">
+        {{#each articles}}
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title">{{this.title}}</h3>
+                    <p class="card-text">{{this.content}}</p>
+                    <div class="d-flex justify-content-between">
+                        <a href="/articles/edit/{{this._id}}" class="btn btn-warning btn-sm">Editar</a>
+                        <form method="POST" action="/articles/{{this._id}}?_method=DELETE" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+    {{else}}
+    <div class="alert alert-info text-center">
+        No hay artículos disponibles. <a href="/articles/add" class="alert-link">Agrega uno aquí</a>.
+    </div>
+    {{/if}}
 </div>
-{{/each}}
