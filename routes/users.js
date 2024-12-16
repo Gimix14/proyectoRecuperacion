@@ -14,9 +14,8 @@ router.get('/register', (req, res) => {
 // Ruta: Procesar Registro
 router.post('/register', async (req, res) => {
     const { name, email, password, password2 } = req.body;
-    let errors = [];
+    const errors = [];
 
-    // Validaciones
     if (!name || !email || !password || !password2) {
         errors.push({ msg: 'Por favor, completa todos los campos.' });
     }
@@ -28,26 +27,26 @@ router.post('/register', async (req, res) => {
     }
 
     if (errors.length > 0) {
-        res.render('users/register', { errors, name, email, password, password2 });
-    } else {
-        try {
-            const existingUser = await User.findOne({ email });
-            if (existingUser) {
-                req.flash('error_msg', 'El correo ya está registrado.');
-                return res.redirect('/users/register');
-            }
+        return res.render('users/register', { errors, name, email, password, password2 });
+    }
 
-            // Crear nuevo usuario
-            const hashedPassword = await bcrypt.hash(password, 10);
-            const newUser = new User({ name, email, password: hashedPassword });
-            await newUser.save();
-
-            req.flash('success_msg', 'Registro exitoso. Ahora puedes iniciar sesión.');
-            res.redirect('/users/login');
-        } catch (err) {
-            console.error(err);
-            res.redirect('/users/register');
+    try {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            req.flash('error_msg', 'El correo ya está registrado.');
+            return res.redirect('/users/register');
         }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ name, email, password: hashedPassword });
+        await newUser.save();
+
+        req.flash('success_msg', 'Registro exitoso. Ahora puedes iniciar sesión.');
+        res.redirect('/users/login');
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Hubo un problema al registrar el usuario.');
+        res.redirect('/users/register');
     }
 });
 

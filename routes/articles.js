@@ -1,44 +1,91 @@
 const express = require('express');
 const router = express.Router();
+const { ensureAuthenticated } = require('../middleware/auth');
 const Article = require('../models/Article');
 
-// Ruta para ver todos los artículos
-router.get('/', async (req, res) => {
-    const articles = await Article.find().lean();
-    res.render('articles/index', { articles });
+// Ruta: Listar artículos
+router.get('/', ensureAuthenticated, async (req, res) => {
+    try {
+        const articles = await Article.find().lean();
+        res.render('articles/index', { articles });
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Error al cargar los artículos.');
+        res.redirect('/');
+    }
 });
 
-// Ruta para agregar un artículo
-router.get('/add', (req, res) => {
+// Ruta: Formulario para agregar un artículo
+router.get('/add', ensureAuthenticated, (req, res) => {
     res.render('articles/add');
 });
 
-router.post('/', async (req, res) => {
+// Ruta: Procesar nuevo artículo
+router.post('/', ensureAuthenticated, async (req, res) => {
     const { title, content } = req.body;
-    const newArticle = new Article({ title, content });
-    await newArticle.save();
-    req.flash('success_msg', 'Artículo creado');
-    res.redirect('/articles');
+    const errors = [];
+
+    // Validaciones
+    if (!title) errors.push({ msg: 'El título es obligatorio.' });
+    if (!content) errors.push({ msg: 'El contenido es obligatorio.' });
+
+    if (errors.length > 0) {
+        res.render('articles/add', { errors, title, content });
+    } else {
+        try {
+            const newArticle = new Article({ title, content });
+            await newArticle.save();
+            req.flash('success_msg', 'Artículo agregado exitosamente.');
+            res.redirect('/articles');
+        } catch (err) {
+            console.error(err);
+            req.flash('error_msg', 'Error al guardar el artículo.');
+            res.redirect('/articles');
+        }
+    }
 });
 
-// Ruta para editar
-router.get('/edit/:id', async (req, res) => {
-    const article = await Article.findById(req.params.id).lean();
-    res.render('articles/edit', { article });
+// Ruta: Formulario para editar un artículo
+router.get('/edit/:id', ensureAuthenticated, async (req, res) => {
+    try {
+        const article = await Article.findById(req.params.id).lean();
+        if (!article) {
+            req.flash('error_msg', 'Artículo no encontrado.');
+            return res.redirect('/articles');
+        }
+        res.render('articles/edit', { article });
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Error al cargar el artículo.');
+        res.redirect('/articles');
+    }
 });
 
-router.put('/:id', async (req, res) => {
+// Ruta: Procesar edición de un artículo
+router.put('/:id', ensureAuthenticated, async (req, res) => {
     const { title, content } = req.body;
-    await Article.findByIdAndUpdate(req.params.id, { title, content });
-    req.flash('success_msg', 'Artículo actualizado');
-    res.redirect('/articles');
+    try {
+        await Article.findByIdAndUpdate(req.params.id, { title, content });
+        req.flash('success_msg', 'Artículo actualizado correctamente.');
+        res.redirect('/articles');
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Error al actualizar el artículo.');
+        res.redirect('/articles');
+    }
 });
 
-// Ruta para eliminar
-router.delete('/:id', async (req, res) => {
-    await Article.findByIdAndDelete(req.params.id);
-    req.flash('success_msg', 'Artículo eliminado');
-    res.redirect('/articles');
+// Ruta: Eliminar un artículo
+router.delete('/:id', ensureAuthenticated, async (req, res) => {
+    try {
+        await Article.findByIdAndDelete(req.params.id);
+        req.flash('success_msg', 'Artículo eliminado exitosamente.');
+        res.redirect('/articles');
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Error al eliminar el artículo.');
+        res.redirect('/articles');
+    }
 });
 
 module.exports = router;
