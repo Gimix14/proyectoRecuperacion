@@ -2,7 +2,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-// Modelo de Usuario
+// Modelo Usuario
 const User = require('../models/User');
 
 module.exports = function (passport) {
@@ -28,7 +28,6 @@ module.exports = function (passport) {
         })
     );
 
-    // Cambiar deserializeUser para usar async/await
     passport.serializeUser((user, done) => done(null, user.id));
     passport.deserializeUser(async (id, done) => {
         try {

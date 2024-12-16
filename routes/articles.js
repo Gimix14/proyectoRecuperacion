@@ -3,7 +3,7 @@ const router = express.Router();
 const { ensureAuthenticated } = require('../middleware/auth');
 const Article = require('../models/Article');
 
-// Ruta: Listar artículos
+// Listar articulos
 router.get('/', ensureAuthenticated, async (req, res) => {
     try {
         const articles = await Article.find().lean();
@@ -15,12 +15,12 @@ router.get('/', ensureAuthenticated, async (req, res) => {
     }
 });
 
-// Ruta: Formulario para agregar un artículo
+// Formulario agregar un articulo
 router.get('/add', ensureAuthenticated, (req, res) => {
     res.render('articles/add');
 });
 
-// Ruta: Procesar nuevo artículo
+// Procesar nuevo articulo
 router.post('/', ensureAuthenticated, async (req, res) => {
     const { title, content } = req.body;
     const errors = [];
@@ -45,7 +45,7 @@ router.post('/', ensureAuthenticated, async (req, res) => {
     }
 });
 
-// Ruta: Formulario para editar un artículo
+// Formulario editar articulo
 router.get('/edit/:id', ensureAuthenticated, async (req, res) => {
     try {
         const article = await Article.findById(req.params.id).lean();
@@ -61,7 +61,7 @@ router.get('/edit/:id', ensureAuthenticated, async (req, res) => {
     }
 });
 
-// Ruta: Procesar edición de un artículo
+// Procesar edicion de un articulo
 router.put('/:id', ensureAuthenticated, async (req, res) => {
     const { title, content } = req.body;
     try {
@@ -75,7 +75,7 @@ router.put('/:id', ensureAuthenticated, async (req, res) => {
     }
 });
 
-// Ruta: Eliminar un artículo
+// Eliminar un articulo
 router.delete('/:id', ensureAuthenticated, async (req, res) => {
     try {
         await Article.findByIdAndDelete(req.params.id);

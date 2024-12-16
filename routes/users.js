@@ -3,15 +3,15 @@ const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const router = express.Router();
 
-// Modelo de Usuario
+// Modelo usuario
 const User = require('../models/User');
 
-// Ruta: Formulario de Registro
+// Formulario de registro
 router.get('/register', (req, res) => {
     res.render('users/register', { title: 'Registro' });
 });
 
-// Ruta: Procesar Registro
+// registro
 router.post('/register', async (req, res) => {
     const { name, email, password, password2 } = req.body;
     const errors = [];
@@ -50,12 +50,12 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// Ruta: Formulario de Inicio de Sesión
+// Formulario inicio sesion
 router.get('/login', (req, res) => {
     res.render('users/login', { title: 'Iniciar Sesión' });
 });
 
-// Ruta: Procesar Inicio de Sesión
+// Procesar inicio de sesion
 router.post('/login', (req, res, next) => {
     passport.authenticate('local', {
         successRedirect: '/articles',
@@ -64,7 +64,7 @@ router.post('/login', (req, res, next) => {
     })(req, res, next);
 });
 
-// Ruta: Cerrar Sesión
+// Cerrar sesion
 router.get('/logout', (req, res) => {
     req.logout(err => {
         if (err) return next(err);
