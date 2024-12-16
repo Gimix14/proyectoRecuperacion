@@ -18,7 +18,7 @@ Este es un proyecto desarrollado como parte de una actividad de recuperacion par
 ## Instalacion y Uso
 1. Clonar repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/proyecto-recuperacion.git
+   git clone https://github.com/Gimix14/proyectoRecuperacion.git
    cd proyecto-recuperacion
 
 2. Instalar dependencias:
